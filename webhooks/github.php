@@ -134,7 +134,7 @@ function pantheon_commit_build_results($repositoryRoot) {
   $gitignoreFile = "$repositoryRoot/.gitignore";
   $gitignoreContents = file_get_contents($gitignoreFile);
   $markerPos = strpos($gitignoreContents, "### Persistent .gitignore entries:");
-  if (strpos($gitignoreContents, $marker) !== FALSE) {
+  if ($markerPos !== FALSE) {
     $reducedContents = ".gitignore\n\n" . substr($gitignoreContents, 0, $markerPos);
     file_put_contents($gitignoreFile, $reducedContents);
     // Commit build results
