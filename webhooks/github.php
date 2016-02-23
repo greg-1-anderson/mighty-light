@@ -56,7 +56,7 @@ if (in_array($localBranch, array('test', 'live'))) {
 }
 
 // Fetch our secret data / parameters
-$secrets = pantheon_get_secrets($bindingDir, ['lean-repo'], ['lean-gh-token' => '', 'lean-remote-branch' => '']);
+$secrets = pantheon_get_secrets($bindingDir, ['lean-repo'], ['lean-gh-token' => '', 'lean-remote-branch' => '', 'lean-require-github' => false]);
 
 $githubUrl = $secrets['lean-repo']; // e.g. https://github.com/joshkoenig/lean-and-mean.git';
 $githubToken = $secrets['lean-gh-token'];
@@ -74,6 +74,12 @@ else {
   pantheon_raise_dashboard_error('No Github Token found');
 }
 */
+
+// If 'lean-require-github' is set in secrets, then only execute
+// if the webhook was submitted by github.
+if (($secrets['lean-require-github']) && !isset($_SERVER['HTTP_X_HUB_SIGNATURE'])) {
+  pantheon_raise_dashboard_error('No GitHub signature header');
+}
 
 // Figure out what the remote branch should be.  This is usually going
 // to be the environment name (or 'master') for dev, but the 'build'
@@ -148,10 +154,6 @@ function pantheon_process_github_webhook($remoteUrl, $remoteBranch) {
   try {
     // Parse the POST data.
     $payload = json_decode(file_get_contents('php://input'), 1);
-    // Only execute if we have a github push.
-    if (!isset($_SERVER['HTTP_X_HUB_SIGNATURE'])) {
-      pantheon_raise_dashboard_error('No GitHub signature header');
-    }
     // Fetch the master branch from the remote URL.  Put it in the
     // '_lean_upstream' branch in the local repository, creating it
     // if necessary.
