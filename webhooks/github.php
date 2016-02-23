@@ -41,7 +41,7 @@
  */
 $repositoryRoot = dirname(__DIR__);
 $bindingDir = dirname($repositoryRoot); // or $_SERVER['HOME']
-$composerRoot = "$projectRoot/private";
+$composerRoot = "$repositoryRoot/private";
 
 include_once "$repositoryRoot/private/scripts/pantheon/lean-repo-utils.php";
 
