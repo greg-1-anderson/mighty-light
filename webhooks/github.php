@@ -81,6 +81,11 @@ if (($secrets['lean-require-github']) && !isset($_SERVER['HTTP_X_HUB_SIGNATURE']
   pantheon_raise_dashboard_error('No GitHub signature header');
 }
 
+// Blow away the lean upstream if 'lean-start-fresh' is set (repair)
+if (isset($secrets['lean-start-fresh'])) {
+  exec("git branch -D _lean_upstream", $deleteOutput, $status);
+}
+
 // Figure out what the remote branch should be.  This is usually going
 // to be the environment name (or 'master') for dev, but the 'build'
 // multidev also builds from master, and you may target any remote
@@ -157,9 +162,6 @@ function pantheon_process_github_webhook($remoteUrl, $remoteBranch) {
     if (!$payload) {
       $payload = ['head_commit' => ['message' => 'Simulated test.']];
     }
-
-    // Temporary: blow away the _lean_upstream (for testing)
-    exec("git branch -D _lean_upstream", $deleteOutput, $status);
 
     // Fetch the master branch from the remote URL.  Put it in the
     // '_lean_upstream' branch in the local repository, creating it
