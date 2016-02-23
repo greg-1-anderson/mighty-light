@@ -2,7 +2,7 @@
 
 This is an unadvertised, unsupported fork of drupal-composer/drupal-project.
 
-This is a work in progress; it is being committed so that end-to-end testing, including project creation may be done. Testing now in progress; probably does not work yet.  Probably will work soon.  Look for a more permanent home in the future at pantheon-systems/drupal-project.
+This is a work in progress; it is being committed so that end-to-end testing, including project creation may be done. Testing now in progress; works a little, but does not work all the way.  Probably will work soon.  Look for a more permanent home in the future at pantheon-systems/drupal-project.
 
 Based on https://github.com/joshkoenig/lean-and-mean.git
 
