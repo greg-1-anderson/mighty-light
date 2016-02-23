@@ -154,8 +154,9 @@ function pantheon_process_github_webhook($remoteUrl, $remoteBranch) {
   try {
     // Parse the POST data.
     $payload = json_decode(file_get_contents('php://input'), 1);
-    $payload += ['head_commit' => []];
-    $payload['head_commit']['message'] = 'Simulated test.';
+    if (!$payload) {
+      $payload = ['head_commit' => ['message' => 'Simulated test.']];
+    }
 
     // Temporary: blow away the _lean_upstream (for testing)
     exec("git branch -D _lean_upstream", $deleteOutput, $status);
