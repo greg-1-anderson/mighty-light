@@ -12,7 +12,7 @@ if [ ! -f $DOCUMENTROOT/autoload.php ]
 fi
 
 # Prepare the settings file for installation
-if [ ! -f $DOCUMENTROOT/sites/default/settings.php ]
+if [ ! -f $DOCUMENTROOT/sites/default/settings.php ] && [ -w $DOCUMENTROOT/sites/default ]
   then
     cp $DOCUMENTROOT/sites/default/default.settings.php $DOCUMENTROOT/sites/default/settings.php
     chmod 666 $DOCUMENTROOT/sites/default/settings.php
@@ -20,7 +20,7 @@ if [ ! -f $DOCUMENTROOT/sites/default/settings.php ]
 fi
 
 # Prepare the services file for installation
-if [ ! -f $DOCUMENTROOT/sites/default/services.yml ]
+if [ ! -f $DOCUMENTROOT/sites/default/services.yml ] && [ -w $DOCUMENTROOT/sites/default ]
   then
     cp $DOCUMENTROOT/sites/default/default.services.yml $DOCUMENTROOT/sites/default/services.yml
     chmod 666 $DOCUMENTROOT/sites/default/services.yml
@@ -28,7 +28,7 @@ if [ ! -f $DOCUMENTROOT/sites/default/services.yml ]
 fi
 
 # Prepare the files directory for installation
-if [ ! -d $DOCUMENTROOT/sites/default/files ]
+if [ ! -d $DOCUMENTROOT/sites/default/files ] && [ -w $DOCUMENTROOT/sites/default ]
   then
     mkdir $DOCUMENTROOT/sites/default/files
     chmod 777 $DOCUMENTROOT/sites/default/files
