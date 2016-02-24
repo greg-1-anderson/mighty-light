@@ -36,7 +36,7 @@ You can [download the 'secrets' script](https://github.com/pantheon-systems/quic
 
 The call to wget should take the latest HEAD of master of your github-mysite repository, overlay it on top of your Pantheon repository, and call 'composer install'.  Note that 'composer update' requires too much RAM to run on Pantheon; you must run updates elsewhere, and then commit the lockfile to your repository.
 
-Next we will set up a GitHub webhook to call our webhook on every commit to the repository. After that, we will put together an easier setup procedure, hopefully involving a simple call to `composer create-project` that prints instructions on how to push to your lean GitHub repository.
+TODO: Next we will set up a GitHub webhook to call our webhook on every commit to the repository. After that, we will put together an easier setup procedure, hopefully involving a simple call to `composer create-project` that prints instructions on how to push to your lean GitHub repository.
 
 This is a work in progress; it is being committed so that end-to-end testing, including project creation may be done. Testing now in progress; works a little, but does not work all the way.  Probably will work soon.  Look for a more permanent home in the future at pantheon-systems/drupal-project.
 
