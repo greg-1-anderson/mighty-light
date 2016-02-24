@@ -135,19 +135,22 @@ function pantheon_commit_build_results($repositoryRoot) {
   $gitignoreContents = file_get_contents($gitignoreFile);
   $markerPos = strpos($gitignoreContents, "### Persistent .gitignore entries:");
   if ($markerPos !== FALSE) {
-    $reducedContents = ".gitignore\n\n" . substr($gitignoreContents, 0, $markerPos);
+    $reducedContents = ".gitignore\n\n" . substr($gitignoreContents, $markerPos);
     file_put_contents($gitignoreFile, $reducedContents);
     // Commit build results
-    exec('git add -A .', $gitAddOutput, $status);
-    if ($status) {
-      pantheon_raise_dashboard_error('Git add failed.', $gitAddOutput);
-    }
-    exec('git commit -m "Commit build results."', $gitCommitOutput, $status);
-    if ($status) {
-      pantheon_raise_dashboard_error('Git commit failed.', $gitCommitOutput);
+    $gitCommitStatus = 0;
+    exec('git add -A .', $gitAddOutput, $gitAddStatus);
+    if (!$gitAddStatus) {
+      exec('git commit -m "Commit build results."', $gitCommitOutput, $gitCommitStatus);
     }
     // restore gitignore. We could also run `git checkout -- .gitignore`
     file_put_contents($gitignoreFile, $gitignoreContents);
+    if ($gitAddStatus) {
+      pantheon_raise_dashboard_error('Git add failed.', $gitAddOutput);
+    }
+    if ($gitCommitStatus) {
+      pantheon_raise_dashboard_error('Git commit failed.', $gitCommitOutput);
+    }
   }
 }
 
