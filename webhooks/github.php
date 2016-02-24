@@ -106,6 +106,10 @@ if (file_exists("$composerRoot/composer.lock")) {
   if ($status) {
     pantheon_raise_dashboard_error('Composer install failed.', $composerInstallOutput);
   }
+  else {
+    print "Ran 'composer install':\n";
+    print implode("\n", $composerInstallOutput);
+  }
   pantheon_commit_build_results($repositoryRoot);
 }
 
