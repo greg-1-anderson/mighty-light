@@ -56,7 +56,7 @@ if (in_array($localBranch, array('test', 'live'))) {
 }
 
 // Fetch our secret data / parameters
-$secrets = pantheon_get_secrets($bindingDir, ['lean-repo'], ['lean-gh-token' => '', 'lean-remote-branch' => '', 'lean-require-github' => false]);
+$secrets = pantheon_get_secrets($bindingDir, ['lean-repo'], ['lean-gh-token' => '', 'lean-remote-branch' => '', 'lean-require-github' => false, 'lean-start-fresh' => false]);
 
 $githubUrl = $secrets['lean-repo']; // e.g. https://github.com/joshkoenig/lean-and-mean.git';
 $githubToken = $secrets['lean-gh-token'];
@@ -82,7 +82,7 @@ if (($secrets['lean-require-github']) && !isset($_SERVER['HTTP_X_HUB_SIGNATURE']
 }
 
 // Blow away the lean upstream if 'lean-start-fresh' is set (repair)
-if (isset($secrets['lean-start-fresh'])) {
+if ($secrets['lean-start-fresh']) {
   exec("git branch -D _lean_upstream", $deleteOutput, $status);
 }
 
