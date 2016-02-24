@@ -42,6 +42,7 @@ This is a work in progress; it is being committed so that end-to-end testing, in
 
 Lean repository work based on https://github.com/joshkoenig/lean-and-mean.git.
 
+
 ## Original README for Composer template for Drupal projects
 
 [![Build Status](https://travis-ci.org/drupal-composer/drupal-project.svg?branch=8.x)](https://travis-ci.org/drupal-composer/drupal-project)
