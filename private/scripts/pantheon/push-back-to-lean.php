@@ -35,11 +35,25 @@ if (!in_array($_ENV['PANTHEON_ENVIRONMENT'], array('test', 'live'))) {
     // Push the most recent hash.
     echo "Last commit was just files tracked upstream:\n\n";
     echo implode("\n", $lean_files);
+
+    // The process below does not work; `git push` will take all of
+    // the commits leading up to the one being moved, so this will make
+    // the lean repository fat.  We do not want that!
+
+    // We will need to use `git cherry-pick` instead.  The challenge
+    // here is that this command allows us to take a commit from a
+    // different branch, and apply it to the current branch.  We need
+    // to take commits from the current branch and apply them to some
+    // other branch.  Ideally, we do not want to switch branches in
+    // order to do this.
+
+    /*
     echo "\n\nPushing...\n";
     echo "\ncd $workspace && git push . $SHA:_lean_upstream 2>&1\n";
     echo `cd $workspace && git push . $SHA:_lean_upstream 2>&1`;
     echo "\ngit push $remote_url _lean_upstream:master 2>&1\n";
     echo `git push $remote_url _lean_upstream:master 2>&1`;
+    */
   }
   else {
     echo "No commits to push back upstream. All is well.";

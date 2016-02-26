@@ -2,9 +2,46 @@
 
 This is an unadvertised, unsupported fork of drupal-composer/drupal-project.
 
+This project keeps the Drupal Root at the Repository root, as required by Pantheon. The composer.json file is relocated to the 'private' directory, and the Composer install paths are set as relative paths starting from the 'private' directory, starting with '../' to navigate up to the Drupal Root / Repository root.
+
+The project otherwise behaves very similar to drupal-composer/drupal-project, which it is based on.
+
+To use this:
+
+1. Make a copy of this lean repository to call your own ("github-mysite").
+2. Make a Pantheon site ("mysite").
+3. Clone your Pantheon site locally:
+  - git clone ssh://codeserver.dev...d@codeserver.dev....drush.in:2222/~/repository.git pantheon-mysite
+  - cd pantheon-mysite
+4. Add github-mysite as a second remote 
+  - git remote add origin git@github.com:MY-ORG/github-mysite.git
+5. Pull the master branch of your lean repository into a branch called 'lean'
+  - git fetch github master:lean
+6. Merge your lean repo files on top of your Pantheon site
+  - git merge -s recursive -Xtheirs lean -m "Merge in initial upstream commit."
+7. Set up your composer.json to suit, and then run `composer install`. n.b. Only commit composer.lock.
+  - cd private
+  - composer install
+  - git add composer.lock
+  - git commit -m "Add composer.lock file"
+
+The general idea is that we will use GitHub webhooks to move commits made on the lean GitHub repository to Pantheon.  To test:
+
+- terminus auth login
+- secrets pantheon-mysite dev lean-repo https://github.com/MY-ORG/github-mysite.git
+- secrets pantheon-mysite dev lean-gh-token YOUR-GITHUB-TOKEN-HERE
+- wget http://dev-mysite.pantheon.io/webhooks/github.php
+
+You can [download the 'secrets' script](https://github.com/pantheon-systems/quicksilver-examples/blob/16c010990579d8a15bbb6705dba463131b423ff4/scripts/secrets) from GitHub.
+
+The call to wget should take the latest HEAD of master of your github-mysite repository, overlay it on top of your Pantheon repository, and call 'composer install'.  Note that 'composer update' requires too much RAM to run on Pantheon; you must run updates elsewhere, and then commit the lockfile to your repository.
+
+TODO: Next we will set up a GitHub webhook to call our webhook on every commit to the repository. After that, we will put together an easier setup procedure, hopefully involving a simple call to `composer create-project` that prints instructions on how to push to your lean GitHub repository.
+
 This is a work in progress; it is being committed so that end-to-end testing, including project creation may be done. Testing now in progress; works a little, but does not work all the way.  Probably will work soon.  Look for a more permanent home in the future at pantheon-systems/drupal-project.
 
-Based on https://github.com/joshkoenig/lean-and-mean.git
+Lean repository work based on https://github.com/joshkoenig/lean-and-mean.git.
+
 
 ## Original README for Composer template for Drupal projects
 

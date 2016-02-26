@@ -56,7 +56,7 @@ if (in_array($localBranch, array('test', 'live'))) {
 }
 
 // Fetch our secret data / parameters
-$secrets = pantheon_get_secrets($bindingDir, ['lean-repo'], ['lean-gh-token' => '', 'lean-remote-branch' => '', 'lean-require-github' => false]);
+$secrets = pantheon_get_secrets($bindingDir, ['lean-repo'], ['lean-gh-token' => '', 'lean-remote-branch' => '', 'lean-require-github' => false, 'lean-start-fresh' => false]);
 
 $githubUrl = $secrets['lean-repo']; // e.g. https://github.com/joshkoenig/lean-and-mean.git';
 $githubToken = $secrets['lean-gh-token'];
@@ -81,6 +81,11 @@ if (($secrets['lean-require-github']) && !isset($_SERVER['HTTP_X_HUB_SIGNATURE']
   pantheon_raise_dashboard_error('No GitHub signature header');
 }
 
+// Blow away the lean upstream if 'lean-start-fresh' is set (repair)
+if ($secrets['lean-start-fresh']) {
+  exec("git branch -D _lean_upstream", $deleteOutput, $status);
+}
+
 // Figure out what the remote branch should be.  This is usually going
 // to be the environment name (or 'master') for dev, but the 'build'
 // multidev also builds from master, and you may target any remote
@@ -100,6 +105,10 @@ if (file_exists("$composerRoot/composer.lock")) {
   exec('composer install', $composerInstallOutput, $status);
   if ($status) {
     pantheon_raise_dashboard_error('Composer install failed.', $composerInstallOutput);
+  }
+  else {
+    print "Ran 'composer install':\n";
+    print implode("\n", $composerInstallOutput);
   }
   pantheon_commit_build_results($repositoryRoot);
 }
@@ -129,20 +138,23 @@ function pantheon_commit_build_results($repositoryRoot) {
   $gitignoreFile = "$repositoryRoot/.gitignore";
   $gitignoreContents = file_get_contents($gitignoreFile);
   $markerPos = strpos($gitignoreContents, "### Persistent .gitignore entries:");
-  if (strpos($gitignoreContents, $marker) !== FALSE) {
-    $reducedContents = ".gitignore\n\n" . substr($gitignoreContents, 0, $markerPos);
+  if ($markerPos !== FALSE) {
+    $reducedContents = ".gitignore\n\n" . substr($gitignoreContents, $markerPos);
     file_put_contents($gitignoreFile, $reducedContents);
     // Commit build results
-    exec('git add -A .', $gitAddOutput, $status);
-    if ($status) {
-      pantheon_raise_dashboard_error('Git add failed.', $gitAddOutput);
-    }
-    exec('git commit -m "Commit build results."', $gitCommitOutput, $status);
-    if ($status) {
-      pantheon_raise_dashboard_error('Git commit failed.', $gitCommitOutput);
+    $gitCommitStatus = 0;
+    exec('git add -A .', $gitAddOutput, $gitAddStatus);
+    if (!$gitAddStatus) {
+      exec('git commit -m "Commit build results."', $gitCommitOutput, $gitCommitStatus);
     }
     // restore gitignore. We could also run `git checkout -- .gitignore`
     file_put_contents($gitignoreFile, $gitignoreContents);
+    if ($gitAddStatus) {
+      pantheon_raise_dashboard_error('Git add failed.', $gitAddOutput);
+    }
+    if ($gitCommitStatus) {
+      pantheon_raise_dashboard_error('Git commit failed.', $gitCommitOutput);
+    }
   }
 }
 
@@ -154,6 +166,10 @@ function pantheon_process_github_webhook($remoteUrl, $remoteBranch) {
   try {
     // Parse the POST data.
     $payload = json_decode(file_get_contents('php://input'), 1);
+    if (!$payload) {
+      $payload = ['head_commit' => ['message' => 'Simulated test.']];
+    }
+
     // Fetch the master branch from the remote URL.  Put it in the
     // '_lean_upstream' branch in the local repository, creating it
     // if necessary.
