@@ -1,0 +1,12 @@
+machine:
+  php:
+    version: 5.5.11
+  hosts:
+    localhost: 127.0.0.1
+  environment:
+    PATH: $HOME/$CIRCLE_PROJECT_REPONAME/private/vendor/bin:$PATH
+
+test:
+  override:
+    - terminus drush 'help light-build' --site=mighty-light --env=dev
+    # - cd behat; behat --config=behat-pantheon.yml
