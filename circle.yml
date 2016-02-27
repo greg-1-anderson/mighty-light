@@ -18,5 +18,6 @@ dependencies:
 
 test:
   override:
+    - terminus auth login --machine-token=$PANTHEON_MACHINE_TOKEN
     - terminus drush 'help light-build' --site=mighty-light --env=dev
     # - cd behat; behat --config=behat-pantheon.yml
