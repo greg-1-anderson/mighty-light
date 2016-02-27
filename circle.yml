@@ -6,6 +6,10 @@ machine:
   environment:
     PATH: $HOME/$CIRCLE_PROJECT_REPONAME/private/vendor/bin:$PATH
 
+dependencies:
+  pre:
+    - cd private && composer install
+
 test:
   override:
     - terminus drush 'help light-build' --site=mighty-light --env=dev
