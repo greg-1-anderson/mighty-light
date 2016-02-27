@@ -5,11 +5,16 @@ machine:
     localhost: 127.0.0.1
   environment:
     PATH: $HOME/$CIRCLE_PROJECT_REPONAME/private/vendor/bin:$PATH
+    PATH: $HOME/terminus/vendor/bin:$PATH
 
 dependencies:
   pre:
     - composer config -g github-oauth.github.com $GITHUB_OAUTH
-    - cd private && composer install
+    # If you are planning on running tests on Circle, composer install here
+    # - cd private && composer install
+    # Install terminus
+    - mkdir $HOME/terminus
+    - composer require pantheon-systems/terminus
 
 test:
   override:
