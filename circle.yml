@@ -14,7 +14,7 @@ dependencies:
     # - cd private && composer install
     # Install terminus
     - mkdir $HOME/terminus
-    - composer require pantheon-systems/terminus
+    - composer require --working-dir=$HOME/terminus pantheon-systems/terminus
 
 test:
   override:
